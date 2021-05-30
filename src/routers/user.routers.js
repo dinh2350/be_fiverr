@@ -1,16 +1,31 @@
 const express = require("express");
-const { User } = require("../models/users.model");
+// Model
+const { User } = require("../app/models/users.model");
+// Controllers
+const { getAllUser, getUserById } = require("../app/controllers/user.controler");
 const userRouter = express.Router();
 
+
+// Get all list User
+userRouter.get("/", getAllUser);
+//  Get user by id
+userRouter.get("/:id", getUserById);
+//  Create User
 userRouter.post("/", async function (req, res) {
-  const newUser = new User({ name: "Nguyễn Van A", email: "haohao@gmail.com" });
+  const newUser = new User({
+    avatar: "abc",
+    first_name: "manh dat",
+    last_name: "vo",
+  });
+
   await newUser.save();
   res.status(201).send(newUser);
-});
+}); 
+//Edit Info User
 
-userRouter.get("/", function (req, res) {
-  res.send("Get ALL");
-});
+
+//Delete User by id
+
 
 module.exports = {
   userRouter,

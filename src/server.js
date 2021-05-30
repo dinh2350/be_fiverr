@@ -1,6 +1,7 @@
 const express = require("express");
+// Import Router
 const { rootRouter } = require("./routers/root.routers");
-
+// Mongo
 const mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost/fiverr_db", { useNewUrlParser: true, useUnifiedTopology: true });
 
