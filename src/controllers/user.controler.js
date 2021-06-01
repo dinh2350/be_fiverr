@@ -29,18 +29,7 @@ const getUserById = async function (req, res) {
 };
 
 const createUser = async function (req, res) {
-  const {
-    avatar,
-    first_name,
-    last_name,
-    email,
-    phone,
-    languages,
-    linkAccount,
-    skill,
-    certification,
-    role,
-  } = req.body;
+  const { avatar, first_name, last_name, email, phone, languages, linkAccount, skill, certification, role } = req.body;
 
   try {
     const newUser = new User({
@@ -65,18 +54,7 @@ const createUser = async function (req, res) {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const {
-    avatar,
-    first_name,
-    last_name,
-    email,
-    phone,
-    languages,
-    linkAccount,
-    skill,
-    certification,
-    role,
-  } = req.body;
+  const { avatar, first_name, last_name, email, phone, languages, linkAccount, skill, certification, role } = req.body;
 
   // byID
   const byId = { _id: id };
