@@ -6,7 +6,7 @@ const jobsShema = new Schema({
   rating: {
     type: Number,
   },
-  price: [Object],
+  price: Number,
   proServices: Boolean,
   localSellers: Boolean,
   onlineSellers: Boolean,
@@ -14,6 +14,10 @@ const jobsShema = new Schema({
   type: {
     type: Schema.Types.ObjectId,
     ref: "TypeJob",
+  },
+  subType: {
+    type: Schema.Types.ObjectId,
+    ref: "SubTypeJob",
   },
   reviewsId: String,
 });

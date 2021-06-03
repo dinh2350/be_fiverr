@@ -6,10 +6,15 @@ const {
   getAll,
   getDetail,
   remove,
+  getByType,
+  getBySubType,
 } = require("../controllers/jobs.controller");
 
 const jobsRouter = express.Router();
 
+// extends
+jobsRouter.get("/by-sub-type", getBySubType);
+jobsRouter.get("/by-type", getByType);
 // Get all list Jobs
 jobsRouter.get("/", getAll);
 //  Get Jobs by id
