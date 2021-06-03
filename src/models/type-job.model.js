@@ -7,6 +7,12 @@ const typeJobSchema = new Schema({
   status: {
     type: Boolean,
   },
+  subTypeJobs: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "SubTypeJob",
+    },
+  ],
 });
 
 const TypeJob = model("TypeJob", typeJobSchema);

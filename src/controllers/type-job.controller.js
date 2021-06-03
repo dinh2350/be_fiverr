@@ -1,6 +1,6 @@
 const { TypeJob } = require("../models/type-job.model");
-const { SubTypeJob } = require("../models/sub-type-job.model");
-const { ObjectID } = require("mongoose").mongo;
+
+// CRUD
 const create = async (req, res) => {
   try {
     const newTypeJob = new TypeJob({ ...req.body });
@@ -12,48 +12,54 @@ const create = async (req, res) => {
 };
 
 const getAll = async (req, res) => {
-  let listTypeJobResult = [
-    {
-      typeJob: {},
-      listSubTypeJob: [{}, {}],
-    },
-    {},
-    {},
-  ];
-
-  //   await SubTypeJob.aggregate([{
-  //     $lookup: {
-  //         from: "typeJob", // collection name in db
-  //         localField: "typeJob",
-  //         foreignField: "_id",
-  //         as: "typeJob"
-  //     }
-  // }]).exec();
-
-  let listSubTypeJob = await SubTypeJob.findById("");
-  res.send(listSubTypeJob);
-  console.log(listSubTypeJob);
   try {
-    let typeJobList = await TypeJob.find();
-    for (let index = 0; index < typeJobList.length; index++) {
-      const typeJob = typeJobList[index];
-      let listSubTypeJob = await SubTypeJob.find({
-        where: {
-          typeJobId: typeJob._id,
-        },
-      });
-      console.log("listSubTypeJob : ", listSubTypeJob);
-      listTypeJobResult = [
-        ...listTypeJobResult,
-        {
-          typeJob,
-          listSubTypeJob,
-        },
-      ];
-    }
-    res.status(200).send(listTypeJobResult);
+    let list = await TypeJob.find().populate("subTypeJobs");
+    res.send(list);
   } catch (error) {
-    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
+const getDetail = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await TypeJob.findById(id).populate("subTypeJobs").exec();
+    res.status(200).send(result);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await TypeJob.findByIdAndUpdate(id, { ...req.body }).exec();
+    res.status(200).send(result);
+  } catch (error) {
+    res.status(500).send(err);
+  }
+};
+
+const remove = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await TypeJob.findByIdAndDelete(id).exec();
+    res.send(result);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+// extend
+const pagination = async (req, res) => {
+  const { skip, limit } = req.query;
+  try {
+    const result = await TypeJob.find({}, null, {
+      skip: +skip,
+      limit: +limit,
+    }).exec();
+    res.status(200).send(result);
+  } catch (error) {
     res.status(500).send(error);
   }
 };
@@ -61,4 +67,8 @@ const getAll = async (req, res) => {
 module.exports = {
   create,
   getAll,
+  remove,
+  update,
+  getDetail,
+  pagination,
 };
