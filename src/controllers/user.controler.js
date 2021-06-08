@@ -1,5 +1,5 @@
 const { User } = require("../models/users.model");
-
+const bcrypt = require("bcryptjs");
 const getAllUser = async function (req, res) {
   try {
     // Case When Success
@@ -29,22 +29,15 @@ const getUserById = async function (req, res) {
 };
 
 const createUser = async function (req, res) {
-  const { avatar, first_name, last_name, email, phone, languages, linkAccount, skill, certification, role } = req.body;
-
   try {
+    // tạo ra một chuỗi ngẫu nhiên
+    const salt = bcrypt.genSaltSync(10);
+    // mã hóa salt + password
+    const hashPassword = bcrypt.hashSync(req.body.password, salt);
     const newUser = new User({
-      avatar,
-      first_name,
-      last_name,
-      email,
-      phone,
-      languages,
-      linkAccount,
-      skill,
-      certification,
-      role,
+      ...req.body,
+      password: hashPassword,
     });
-
     await newUser.save();
     res.status(201).send(newUser);
   } catch (error) {

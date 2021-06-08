@@ -3,6 +3,9 @@ const express = require("express");
 const { rootRouter } = require("./routers/root.routers");
 // Mongo
 const mongoose = require("mongoose");
+mongoose.set("useNewUrlParser", true);
+mongoose.set("useFindAndModify", false);
+mongoose.set("useCreateIndex", true);
 mongoose.connect("mongodb://localhost/fiverr_db", { useNewUrlParser: true, useUnifiedTopology: true });
 
 const app = express();

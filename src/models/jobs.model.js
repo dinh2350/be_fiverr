@@ -20,6 +20,14 @@ const jobsShema = new Schema({
     ref: "SubTypeJob",
   },
   reviewsId: String,
+  userCreated: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+  usersBooking: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 const Jobs = model("Jobs", jobsShema);

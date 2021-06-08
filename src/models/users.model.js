@@ -4,21 +4,27 @@ const userSchema = new Schema({
   avatar: String,
   first_name: String,
   last_name: String,
-  email: String,
+  email: {
+    type: String,
+    unique: true,
+  },
+  password: String,
   phone: String,
-  languages: {
-    type: Array,
-  },
-  linkAccount: {
-    type: Array,
-  },
+  birthday: Date,
+  gender: Boolean, // true là nam , false là nữ
   skill: {
-    type: Array,
+    type: [String],
   },
   certification: {
-    type: Array,
+    type: [String],
   },
   role: String,
+  bookingJob: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Jobs",
+    },
+  ],
 });
 
 const User = model("User", userSchema);
