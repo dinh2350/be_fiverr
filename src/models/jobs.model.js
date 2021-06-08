@@ -19,6 +19,7 @@ const jobsShema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "SubTypeJob",
   },
+  status: Boolean, // true là open , false là busy
   reviewsId: String,
   userCreated: {
     type: Schema.Types.ObjectId,

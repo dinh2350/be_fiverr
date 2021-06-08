@@ -1,10 +1,14 @@
 const { Jobs } = require("../models/jobs.model");
+const { User } = require("../models/users.model");
 
 // CRUD
 const create = async (req, res) => {
+  const _id = req.user;
   try {
     const newJob = new Jobs({
       ...req.body,
+      status: true,
+      userCreated: _id,
     });
 
     await newJob.save();
@@ -136,6 +140,69 @@ const getBySubType = async (req, res) => {
   }
 };
 
+const booking = async (req, res) => {
+  const _id = req.user;
+  const { id } = req.params;
+  try {
+    let jobEdit = await Jobs.findOne({
+      _id: id,
+    }).exec();
+    if (jobEdit) {
+      jobEdit.status = false;
+      jobEdit.usersBooking = _id;
+      await jobEdit.save();
+
+      // user
+      const userEdit = await User.findById(_id).exec();
+      userEdit.bookingJob = [...userEdit.bookingJob, id];
+      userEdit.save();
+      res.status(200).send(jobEdit);
+    } else {
+      res.status(400).send("Job not found!");
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getJobByUser = async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const user = await User.findById(_id).populate("bookingJob").exec();
+    res.send(user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const doneJob = async (req, res) => {
+  const { id } = req.params;
+  try {
+    let jobEdit = await Jobs.findOne({
+      _id: id,
+    }).exec();
+    if (jobEdit) {
+      // user
+      const idUserBooking = jobEdit.usersBooking;
+      console.log("idUserBooking : ", idUserBooking);
+      const userEdit = await User.findById(idUserBooking).exec();
+      userEdit.bookingJob = [...userEdit.bookingJob].filter((idJob) => idJob !== id);
+      await userEdit.save();
+      // job
+      jobEdit.status = true; // open
+      jobEdit.usersBooking = null;
+      await jobEdit.save();
+
+      res.status(200).send(jobEdit);
+    } else {
+      res.status(400).send("Job not found!");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   create,
   update,
@@ -144,4 +211,7 @@ module.exports = {
   remove,
   getByType,
   getBySubType,
+  booking,
+  getJobByUser,
+  doneJob,
 };

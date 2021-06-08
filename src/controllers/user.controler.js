@@ -1,5 +1,7 @@
 const { User } = require("../models/users.model");
 const bcrypt = require("bcryptjs");
+const { config } = require("../configs");
+
 const getAllUser = async function (req, res) {
   try {
     // Case When Success
@@ -95,10 +97,27 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const uploadAvatar = async (req, res) => {
+  const { file } = req;
+  const urlImage = `${config.server.hostName}/${file.path}`;
+  const { user } = req;
+  try {
+    const userFound = await User.findOne({
+      email: user.email,
+    });
+    userFound.avatar = urlImage;
+    await userFound.save();
+    res.status(200).send(userFound);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   getAllUser,
   getUserById,
   createUser,
   updateUser,
   deleteUser,
+  uploadAvatar,
 };
