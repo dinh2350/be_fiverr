@@ -23,10 +23,10 @@ module.exports.authorize = (userTypeArray) => {
   return (req, res, next) => {
     const { user } = req;
 
-    if (userTypeArray.findIndex((elm) => elm === user.type) > -1) return next();
+    if (userTypeArray.findIndex((elm) => elm === user.role) > -1) return next();
     // if (userType === user.userType) return next();
     return res.status(403).json({
-      message: "Ban da dang nhap, nhung ko co quyen xem",
+      message: "Bạn đã đăng nhập , nhưng không có quyền",
     });
   };
 };

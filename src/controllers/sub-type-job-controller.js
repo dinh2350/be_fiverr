@@ -23,7 +23,40 @@ const getAll = async (req, res) => {
   }
 };
 
+const getDetail = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await SubTypeJob.findById(id).populate("typeJob").exec();
+    res.status(200).send(result);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await SubTypeJob.findByIdAndUpdate(id, { ...req.body }).exec();
+    res.status(200).send(result);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const remove = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await SubTypeJob.findByIdAndDelete(id).exec();
+    res.send(result);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
 module.exports = {
   create,
   getAll,
+  getDetail,
+  update,
+  remove,
 };

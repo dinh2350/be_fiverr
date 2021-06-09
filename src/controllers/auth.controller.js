@@ -30,7 +30,7 @@ const signin = async (req, res) => {
     // b2 : kiểm mật khẩu có đúng hay không
     const isAuth = bcrypt.compareSync(password, user.password);
     if (isAuth) {
-      const token = jwt.sign({ _id: user._id, email: user.email, type: user.type }, config.credential.secretKey);
+      const token = jwt.sign({ _id: user._id, email: user.email, role: user.role }, config.credential.secretKey);
       res.status(200).send({ message: "Đăng Nhập Thành Công ! ", user, token });
     } else {
       res.status(500).send({ message: "Tài khoãng hoặc mật khẩu không đúng" });

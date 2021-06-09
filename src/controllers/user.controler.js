@@ -15,7 +15,6 @@ const getAllUser = async function (req, res) {
 
 const getUserById = async function (req, res) {
   const { id } = req.params;
-
   try {
     const result = await User.findOne({
       _id: id,
@@ -49,33 +48,11 @@ const createUser = async function (req, res) {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { avatar, first_name, last_name, email, phone, languages, linkAccount, skill, certification, role } = req.body;
-
-  // byID
-  const byId = { _id: id };
-
   try {
-    let userEdit = await User.findOne(byId).exec();
-
-    if (userEdit) {
-      userEdit.avatar = avatar;
-      userEdit.first_name = first_name;
-      userEdit.last_name = last_name;
-      userEdit.email = email;
-      userEdit.phone = phone;
-      userEdit.languages = languages;
-      userEdit.linkAccount = linkAccount;
-      userEdit.skill = skill;
-      userEdit.certification = certification;
-      userEdit.role = role;
-
-      await userEdit.save();
-      res.status(200).send(userEdit);
-    } else {
-      res.status(404).send("Không tìm thấy User");
-    }
+    const result = await User.findByIdAndUpdate(id, { ...req.body }).exec();
+    res.status(200).send(result);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(err);
   }
 };
 
@@ -113,6 +90,26 @@ const uploadAvatar = async (req, res) => {
   }
 };
 
+const getPaginationAndSearch = async (req, res) => {
+  const { name, skip, limit } = req.query;
+  let dkquery = {};
+  if (name) {
+    dkquery = {
+      name: { $regex: ".*" + name + ".*", $options: "i" },
+    };
+  }
+  console.log(dkquery);
+  try {
+    const userList = await User.find(dkquery, null, {
+      skip: +skip,
+      limit: +limit,
+    }).exec();
+    res.status(200).send(userList);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   getAllUser,
   getUserById,
@@ -120,4 +117,5 @@ module.exports = {
   updateUser,
   deleteUser,
   uploadAvatar,
+  getPaginationAndSearch,
 };

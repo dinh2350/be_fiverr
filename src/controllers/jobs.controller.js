@@ -1,6 +1,6 @@
 const { Jobs } = require("../models/jobs.model");
 const { User } = require("../models/users.model");
-
+const { config } = require("../configs");
 // CRUD
 const create = async (req, res) => {
   const _id = req.user;
@@ -18,39 +18,49 @@ const create = async (req, res) => {
   }
 };
 
+// const update = async (req, res) => {
+//   const { id } = req.params;
+
+//   const { name, images, rating, price, proServices, localSellers, onlineSellers, deliveryTime, type, reviewsId } =
+//     req.body;
+
+//   const byId = {
+//     _id: id,
+//   };
+
+//   try {
+//     let jobEdit = await Jobs.findOne(byId).exec();
+
+//     if (jobEdit) {
+//       jobEdit.name = name;
+//       jobEdit.images = images;
+//       jobEdit.rating = rating;
+//       jobEdit.price = price;
+//       jobEdit.proServices = proServices;
+//       jobEdit.localSellers = localSellers;
+//       jobEdit.onlineSellers = onlineSellers;
+//       jobEdit.deliveryTime = deliveryTime;
+//       jobEdit.type = type;
+//       jobEdit.reviewsId = reviewsId;
+
+//       await jobEdit.save();
+
+//       res.status(200).send(jobEdit);
+//     } else {
+//       res.status(400).send("Job not found!");
+//     }
+//   } catch (error) {
+//     res.status(500).send(error);
+//   }
+// };
+
 const update = async (req, res) => {
   const { id } = req.params;
-
-  const { name, images, rating, price, proServices, localSellers, onlineSellers, deliveryTime, type, reviewsId } =
-    req.body;
-
-  const byId = {
-    _id: id,
-  };
-
   try {
-    let jobEdit = await Jobs.findOne(byId).exec();
-
-    if (jobEdit) {
-      jobEdit.name = name;
-      jobEdit.images = images;
-      jobEdit.rating = rating;
-      jobEdit.price = price;
-      jobEdit.proServices = proServices;
-      jobEdit.localSellers = localSellers;
-      jobEdit.onlineSellers = onlineSellers;
-      jobEdit.deliveryTime = deliveryTime;
-      jobEdit.type = type;
-      jobEdit.reviewsId = reviewsId;
-
-      await jobEdit.save();
-
-      res.status(200).send(jobEdit);
-    } else {
-      res.status(400).send("Job not found!");
-    }
+    const result = await Jobs.findByIdAndUpdate(id, { ...req.body }).exec();
+    res.status(200).send(result);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(err);
   }
 };
 
@@ -203,6 +213,40 @@ const doneJob = async (req, res) => {
   }
 };
 
+const getByName = async (req, res) => {
+  const { name } = req.query;
+  try {
+    const allList = await Jobs.find({
+      name: { $regex: ".*" + name + ".*", $options: "i" },
+    })
+      .populate("type")
+      .populate("subType")
+      .exec();
+
+    res.status(200).send(allList);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const uploadImage = async (req, res) => {
+  const { files } = req;
+  const { id } = req.params;
+  const listUrl = files.map((file) => {
+    return `${config.server.hostName}/${file.path}`;
+  });
+
+  try {
+    const jobDetail = await Jobs.findOne({
+      _id: id,
+    }).exec();
+    jobDetail.images = listUrl;
+    await jobDetail.save();
+    res.status(200).send(jobDetail);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 module.exports = {
   create,
   update,
@@ -214,4 +258,6 @@ module.exports = {
   booking,
   getJobByUser,
   doneJob,
+  getByName,
+  uploadImage,
 };

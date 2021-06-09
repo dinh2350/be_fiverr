@@ -11,13 +11,18 @@ const {
   booking,
   getJobByUser,
   doneJob,
+  getByName,
+  uploadImage,
 } = require("../controllers/jobs.controller");
-const { authenticate } = require("../middlewares/auth/verify-token.middlewares");
+const { authenticate, authorize } = require("../middlewares/auth/verify-token.middlewares");
+const { uploadImageMultiple } = require("../middlewares/upload-file/upload-image.middlewares");
 const jobsRouter = express.Router();
 
 // extends
+jobsRouter.post("/upload-image/:id", authenticate, authorize(["ADMIN"]), uploadImageMultiple("job", 10), uploadImage);
 jobsRouter.get("/by-sub-type", getBySubType);
 jobsRouter.get("/by-type", getByType);
+jobsRouter.get("/by-name", getByName);
 // booking
 jobsRouter.patch("/booking/:id", authenticate, booking);
 // done job
